@@ -34,9 +34,6 @@ app.use(morgan('tiny'));
 app.use(cors());
 
 // Routes
-// app.get('/', function (req, res) {
-//   res.send('Server running well!');
-// });
 app.use('/api', require('./routes/noteRoute'));
 
 // Middleware for Vue.js router History mode
