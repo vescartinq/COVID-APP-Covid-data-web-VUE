@@ -10,7 +10,6 @@ const mongoose = require('mongoose');
 const app = express();
 
 // Connect to DB
-// Conexion en la nube
 const uri = 'xxx';
 const options = {
   useNewUrlParser: true,
