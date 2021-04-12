@@ -1,52 +1,78 @@
 <template>
   <div class="container">
-    <h1>Notas</h1>
+    <h1>Notes</h1>
     <b-alert
       :show="dismissCountDown"
       dismissible
-      :variant="mensaje.color"
-      @dismissed="dismissCountDown=0"
+      :variant="message.colour"
+      @dismissed="dismissCountDown = 0"
       @dismiss-count-down="countDownChanged"
     >
-      {{mensaje.texto}}
+      {{ message.text }}
     </b-alert>
 
-    <form @submit.prevent="editarNota(notaEditar)" v-if="editar">
-      <h3>Editar nota</h3>
-      <input type="text" class="form-control my-2" placeholder="Nombre" v-model="notaEditar.nombre">
-      <input type="text" class="form-control my-2" placeholder="Descripción" v-model="notaEditar.descripcion">
-      <b-button class="btn-warning my-2 mx-2" type="submit">Editar</b-button>
-      <b-button class="my-2" type="submit" @click="editar = false">Cancelar</b-button>
+    <form @submit.prevent="editNote(noteEdit)" v-if="edit">
+      <h3>Edit note</h3>
+      <input
+        type="text"
+        class="form-control my-2"
+        placeholder="Name"
+        v-model="noteEdit.name"
+      />
+      <input
+        type="text"
+        class="form-control my-2"
+        placeholder="Description"
+        v-model="noteEdit.description"
+      />
+      <b-button class="btn-warning my-2 mx-2" type="submit">Edit</b-button>
+      <b-button class="my-2" type="submit" @click="edit = false"
+        >Cancel</b-button
+      >
     </form>
 
-    <form @submit.prevent="agregarNota()" v-if="!editar">
-      <h3>Agregar nueva nota</h3>
-      <input type="text" class="form-control my-2" placeholder="Nombre" v-model="nota.nombre">
-      <input type="text" class="form-control my-2" placeholder="Descripción" v-model="nota.descripcion">
-      <b-button class="btn-success my-2 btn-block" type="submit">Agregar</b-button>
+    <form @submit.prevent="addNote()" v-if="!edit">
+      <h3>Add new note</h3>
+      <input
+        type="text"
+        class="form-control my-2"
+        placeholder="Name"
+        v-model="note.name"
+      />
+      <input
+        type="text"
+        class="form-control my-2"
+        placeholder="Description"
+        v-model="note.description"
+      />
+      <b-button class="btn-success my-2 btn-block" type="submit">Add</b-button>
     </form>
 
     <table class="table">
       <thead>
         <tr>
           <th scope="col">#</th>
-          <th scope="col">Nombre</th>
-          <th scope="col">Descripción</th>
-          <th scope="col">Acciones</th>
+          <th scope="col">Name</th>
+          <th scope="col">Description</th>
+          <th scope="col">Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(item, index) in notas" :key="index">
-          <th scope="row">{{item._id}}</th>
-          <td>{{item.nombre}}</td>
-          <td>{{item.descripcion}}</td>
+        <tr v-for="(item, index) in notes" :key="index">
+          <th scope="row">{{ item._id }}</th>
+          <td>{{ item.name }}</td>
+          <td>{{ item.description }}</td>
           <td>
             <!-- <b-button @click="alerta()">Acción</b-button> -->
-            <b-button @click="eliminarNota(item._id)" 
-              class="btn-danger btn-sm mx-2">Eliminar
+            <b-button
+              @click="deleteNote(item._id)"
+              class="btn-danger btn-sm mx-2"
+              >Delete
             </b-button>
-            <b-button @click="activarEdicion(item._id)" 
-              class="btn-warning btn-sm">Editar
+            <b-button
+              @click="activateEdition(item._id)"
+              class="btn-warning btn-sm"
+              >Edit
             </b-button>
           </td>
         </tr>
@@ -57,104 +83,114 @@
 
 <script>
 export default {
+  // Initial state
   data() {
     return {
-      notas: [],
+      notes: [],
       dismissSecs: 5,
       dismissCountDown: 0,
-      mensaje: {color: '', texto: ''},
-      nota: {nombre: '', descripcion: ''},
-      editar: false,
-      notaEditar: {}
-    }
+      message: { colour: '', text: '' },
+      note: { name: '', description: '' },
+      edit: false,
+      noteEdit: {},
+    };
   },
-  created(){
-    this.listarNotas();
+  // After data is readed
+  created() {
+    this.listNotes();
   },
+  // Actions
   methods: {
-    alerta(){
-      this.mensaje.color = 'danger';
-      this.mensaje.texto = 'Probando alerta';
+    alert() {
+      this.message.colour = 'danger';
+      this.message.text = 'Alert prove';
       this.showAlert();
     },
-    listarNotas(){
-      this.axios.get('/nota')
-        .then(res => {
+    listNotes() {
+      this.axios
+        .get('/note')
+        .then((res) => {
           console.log(res.data);
-          this.notas = res.data;
+          this.notes = res.data;
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e.response);
-        })
+        });
     },
-    agregarNota(){
+    addNote() {
       // console.log(this.nota);
-      this.axios.post('/nueva-nota', this.nota)
-        .then(res => {
-          this.notas.push(res.data)
-          this.nota.nombre = '';
-          this.nota.descripcion = '';
-          this.mensaje.color = 'success';
-          this.mensaje.texto = 'Nota Agregada!';
-          this.showAlert()
+      this.axios
+        .post('/new-note', this.noteEdit)
+        .then((res) => {
+          this.notes.push(res.data);
+          this.note.name = '';
+          this.note.description = '';
+          this.message.colour = 'success';
+          this.message.text = 'Note Added!';
+          this.showAlert();
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e.response);
-          if(e.response.data.error.errors.nombre.message){
-            this.mensaje.texto = e.response.data.error.errors.nombre.message
-          }else{
-            this.mensaje.texto = 'Error de sistema';
+          if (e.response.data.error.errors.nombre.message) {
+            this.message.text = e.response.data.error.errors.nombre.message;
+          } else {
+            this.message.text = 'System Error';
           }
           this.mensaje.color = 'danger';
-          this.showAlert()
-        })
+          this.showAlert();
+        });
     },
-    eliminarNota(id){
+    deleteNote(id) {
       console.log(id);
-      this.axios.delete(`/nota/${id}`)
-        .then(res => {
-          const index = this.notas.findIndex(item => item._id === res.data._id);
-          this.notas.splice(index, 1);
-          this.mensaje.color = 'success';
-          this.mensaje.texto = 'Nota Eliminada';
+      this.axios
+        .delete(`/note/${id}`)
+        .then((res) => {
+          const index = this.notas.findIndex(
+            (item) => item._id === res.data._id
+          );
+          this.notes.splice(index, 1);
+          this.message.colour = 'success';
+          this.message.text = 'Note Deleted';
           this.showAlert();
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e.response);
-        })
+        });
     },
-    activarEdicion(id){
-      this.editar = true;
+    activateEdition(id) {
+      this.edit = true;
       console.log(id);
-      this.axios.get(`/nota/${id}`)
-        .then(res => {
-          this.notaEditar = res.data;
+      this.axios
+        .get(`/note/${id}`)
+        .then((res) => {
+          this.noteEdit = res.data;
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e.response);
-        })
+        });
     },
-    editarNota(item){
-      this.axios.put(`/nota/${item._id}`, item)
-        .then(res => {
-          const index = this.notas.findIndex(n => n._id === res.data._id);
-          this.notas[index].nombre = res.data.nombre;
-          this.notas[index].descripcion = res.data.descripcion;
-          this.mensaje.color = 'success';
-          this.mensaje.texto = 'Nota Editada';
+    editNote(item) {
+      this.axios
+        .put(`/note/${item._id}`, item)
+        .then((res) => {
+          const index = this.notes.findIndex((n) => n._id === res.data._id);
+          this.notes[index].name = res.data.name;
+          this.notes[index].description = res.data.description;
+          this.message.colour = 'success';
+          this.message.text = 'Note Edited';
           this.showAlert();
-          this.editar = false;
+          this.edit = false;
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e.response);
-        })
+        });
     },
     countDownChanged(dismissCountDown) {
-      this.dismissCountDown = dismissCountDown
+      this.dismissCountDown = dismissCountDown;
     },
     showAlert() {
-      this.dismissCountDown = this.dismissSecs
-    }
-  }
-}
+      this.dismissCountDown = this.dismissSecs;
+    },
+  },
+};
 </script>
