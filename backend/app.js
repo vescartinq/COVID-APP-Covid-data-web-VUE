@@ -10,7 +10,7 @@ const mongoose = require('mongoose');
 const app = express();
 
 // Connect to DB
-const uri = 'xxx';
+const uri = 'mongodb://localhost:27017/covid-app';
 const options = {
   useNewUrlParser: true,
   useCreateIndex: true,

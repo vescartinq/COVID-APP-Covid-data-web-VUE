@@ -9,7 +9,7 @@ const noteSchema = new Schema({
   active: { type: Boolean, default: true },
 });
 
-// Convertir a un modelo
+// Convert to a Model
 const Note = mongoose.model('Note', noteSchema);
 
 module.exports = Note;

@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-// importar el modelo nota
-const Note = require('../models/note');
+// import Note Schema
+const Note = require('../models/noteSchema');
 
-// Agregar una nota
+// Add Note
 router.post('/new-note', async (req, res) => {
   const body = req.body;
   try {
@@ -18,7 +18,20 @@ router.post('/new-note', async (req, res) => {
   }
 });
 
-// Get con parámetros
+// Get all Notes
+router.get('/note', async (req, res) => {
+  try {
+    const noteDb = await Note.find();
+    res.json(noteDb);
+  } catch (error) {
+    return res.status(400).json({
+      message: 'Error',
+      error,
+    });
+  }
+});
+
+// Get a Note with parameters
 router.get('/note/:id', async (req, res) => {
   const _id = req.params.id;
   try {
@@ -32,20 +45,7 @@ router.get('/note/:id', async (req, res) => {
   }
 });
 
-// Get con todos los documentos
-router.get('/note', async (req, res) => {
-  try {
-    const noteDb = await Note.find();
-    res.json(noteDb);
-  } catch (error) {
-    return res.status(400).json({
-      message: 'Error',
-      error,
-    });
-  }
-});
-
-// Delete eliminar una nota
+// Delete a Note
 router.delete('/note/:id', async (req, res) => {
   const _id = req.params.id;
   try {
@@ -56,7 +56,7 @@ router.delete('/note/:id', async (req, res) => {
         error,
       });
     }
-    res.json(noteDb);
+    res.json('Note deleted');
   } catch (error) {
     return res.status(400).json({
       message: 'Error',
@@ -65,12 +65,12 @@ router.delete('/note/:id', async (req, res) => {
   }
 });
 
-// Put actualizar una nota
+// Update a Note
 router.put('/note/:id', async (req, res) => {
   const _id = req.params.id;
   const body = req.body;
   try {
-    const noteDb = await Note.findByIdAndUpdate(_id, body, { new: true });
+    const noteDb = await Note.findByIdAndUpdate(_id, body, { new: true }); //{ new: true } nos devuelve la nota actualizada
     res.json(noteDb);
   } catch (error) {
     return res.status(400).json({
@@ -80,5 +80,4 @@ router.put('/note/:id', async (req, res) => {
   }
 });
 
-// Exportación de router
 module.exports = router;
