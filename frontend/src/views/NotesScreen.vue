@@ -45,7 +45,9 @@
         placeholder="Description"
         v-model="note.description"
       />
-      <b-button class="btn-success my-2 btn-block" type="submit">Add</b-button>
+      <b-button class="btn-success my-2 btn-block" type="submit"
+        >Add New Note</b-button
+      >
     </form>
 
     <table class="table">
@@ -87,7 +89,7 @@ export default {
   data() {
     return {
       notes: [],
-      dismissSecs: 5,
+      dismissSecs: 2,
       dismissCountDown: 0,
       message: { colour: '', text: '' },
       note: { name: '', description: '' },
@@ -95,7 +97,7 @@ export default {
       noteEdit: {},
     };
   },
-  // After data is readed
+  // After Component DidMount
   created() {
     this.listNotes();
   },
@@ -110,7 +112,7 @@ export default {
       this.axios
         .get('/note')
         .then((res) => {
-          console.log(res.data);
+          // console.log(res);
           this.notes = res.data;
         })
         .catch((e) => {
@@ -118,9 +120,8 @@ export default {
         });
     },
     addNote() {
-      // console.log(this.nota);
       this.axios
-        .post('/new-note', this.noteEdit)
+        .post('/new-note', this.note)
         .then((res) => {
           this.notes.push(res.data);
           this.note.name = '';
@@ -131,26 +132,22 @@ export default {
         })
         .catch((e) => {
           console.log(e.response);
-          if (e.response.data.error.errors.nombre.message) {
-            this.message.text = e.response.data.error.errors.nombre.message;
+          if (e.response.data.error.errors.name.message) {
+            this.message.text = e.response.data.error.errors.name.message;
           } else {
             this.message.text = 'System Error';
           }
-          this.mensaje.color = 'danger';
+          this.message.colour = 'danger';
           this.showAlert();
         });
     },
     deleteNote(id) {
-      console.log(id);
       this.axios
         .delete(`/note/${id}`)
         .then((res) => {
-          const index = this.notas.findIndex(
-            (item) => item._id === res.data._id
-          );
-          this.notes.splice(index, 1);
+          this.notes = this.notes.filter((item) => item._id !== id);
           this.message.colour = 'success';
-          this.message.text = 'Note Deleted';
+          this.message.text = `${res.data} succesfully!`;
           this.showAlert();
         })
         .catch((e) => {
@@ -173,11 +170,13 @@ export default {
       this.axios
         .put(`/note/${item._id}`, item)
         .then((res) => {
-          const index = this.notes.findIndex((n) => n._id === res.data._id);
-          this.notes[index].name = res.data.name;
-          this.notes[index].description = res.data.description;
+          const editingNote = this.notes.find(
+            (note) => note._id === res.data._id
+          );
+          editingNote.name = res.data.name;
+          editingNote.description = res.data.description;
           this.message.colour = 'success';
-          this.message.text = 'Note Edited';
+          this.message.text = 'Note Edited successfully!';
           this.showAlert();
           this.edit = false;
         })
