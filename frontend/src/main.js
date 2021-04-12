@@ -18,7 +18,7 @@ Vue.use(VueAxios, axios);
 
 // BACKEND
 // axios.defaults.baseURL = 'http://localhost:4000/api'; //dev
-axios.defaults.baseURL = 'https://covid-app-mevn.herokuapp.com/notes'; //build
+axios.defaults.baseURL = 'https://covid-app-mevn.herokuapp.com/api'; //build
 
 Vue.config.productionTip = false;
 
