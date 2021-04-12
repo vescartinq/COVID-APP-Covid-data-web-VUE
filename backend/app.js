@@ -9,8 +9,12 @@ const mongoose = require('mongoose');
 // Init server
 const app = express();
 
-// Connect to DB
-const uri = 'mongodb://localhost:27017/covid-app';
+// Connect to local DB
+// const uri = 'mongodb://localhost:27017/covid-app';
+// Connect to cloud DB
+const uri =
+  'mongodb+srv://mevn_user:qP50wy9J1aR0FhjD@mevn.lbqqk.mongodb.net/covid-app-mevn?retryWrites=true&w=majority';
+
 const options = {
   useNewUrlParser: true,
   useCreateIndex: true,
