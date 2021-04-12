@@ -23,7 +23,7 @@ backend setting with MongoDB for user's configs and insert notes.
 
 You can check the app here :
 
-- work in progress
+- https://covid-app-mevn.herokuapp.com/notes (work in progress)
 
 ## 3. Technologies
 
