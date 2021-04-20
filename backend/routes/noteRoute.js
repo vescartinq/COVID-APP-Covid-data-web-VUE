@@ -4,34 +4,49 @@ const router = express.Router();
 // import Note Schema
 const Note = require('../models/noteSchema');
 
-// Add Note
-router.post('/new-note', async (req, res) => {
-  const body = req.body;
-  try {
-    const noteDB = await Note.create(body);
-    res.status(200).json(noteDB);
-  } catch (error) {
-    return res.status(500).json({
-      message: 'Error',
-      error,
-    });
-  }
+// Middleware to verify JWT
+const {verifyAuth, verifyAdmin} = require('../middlewares/authentication')
+
+// Add Note verifying user by token
+router.post(
+  '/new-note', 
+  verifyAuth, 
+  async (req, res) => {
+
+    const body = req.body;
+
+    // add userId -> identify user that create note
+    body.userId = req.user._id;
+
+    try {
+      const noteDB = await Note.create(body);
+      res.status(200).json(noteDB);
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Error',
+        error,
+      });
+    }
 });
 
 // Get all Notes
-router.get('/note', async (req, res) => {
-  try {
-    const noteDb = await Note.find();
-    res.json(noteDb);
-  } catch (error) {
-    return res.status(400).json({
-      message: 'Error',
-      error,
-    });
-  }
+router.get(
+  '/note', 
+  verifyAuth, 
+  async (req, res) => {
+
+    try {
+      const noteDb = await Note.find();
+      res.json(noteDb);
+    } catch (error) {
+      return res.status(400).json({
+        message: 'Error',
+        error,
+      });
+    }
 });
 
-// Get a Note with parameters
+// Get a Note by params
 router.get('/note/:id', async (req, res) => {
   const _id = req.params.id;
   try {
