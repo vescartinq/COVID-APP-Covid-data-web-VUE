@@ -40,7 +40,7 @@ app.use(cors());
 // Routes
 app.use('/api', require('./routes/noteRoute'));
 app.use('/api', require('./routes/userRoute'));
-app.use('/login', require('./routes/loginRoute'));
+app.use('/api/login', require('./routes/loginRoute'));
 
 // Middleware for Vue.js router History mode
 app.use(history());

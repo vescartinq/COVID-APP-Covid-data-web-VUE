@@ -84,6 +84,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   // Initial state
   data() {
@@ -97,6 +99,10 @@ export default {
       noteEdit: {},
     };
   },
+  // Read items that give permisons to execute actions
+  computed: {
+    ...mapState(['token']),
+  },
   // After Component DidMount
   created() {
     this.listNotes();
@@ -109,8 +115,14 @@ export default {
       this.showAlert();
     },
     listNotes() {
+      let config = {
+        headers: {
+          token: this.token,
+        },
+      };
+
       this.axios
-        .get('/note')
+        .get('/note', config)
         .then((res) => {
           // console.log(res);
           this.notes = res.data;
@@ -120,8 +132,14 @@ export default {
         });
     },
     addNote() {
+      let config = {
+        headers: {
+          token: this.token,
+        },
+      };
+
       this.axios
-        .post('/new-note', this.note)
+        .post('/new-note', this.note, config)
         .then((res) => {
           this.notes.push(res.data);
           this.note.name = '';
