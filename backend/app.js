@@ -10,10 +10,10 @@ const mongoose = require('mongoose');
 const app = express();
 
 // Connect to local DB
-const uri = 'mongodb://localhost:27017/covid-app';
+// const uri = 'mongodb://localhost:27017/covid-app';
 // Connect to cloud DB
-// const uri =
-//   'mongodb+srv://mevn_user:qP50wy9J1aR0FhjD@mevn.lbqqk.mongodb.net/covid-app-mevn?retryWrites=true&w=majority';
+const uri =
+  'mongodb+srv://mevn_user:qP50wy9J1aR0FhjD@mevn.lbqqk.mongodb.net/covid-app-mevn?retryWrites=true&w=majority';
 
 const options = {
   useNewUrlParser: true,
@@ -40,7 +40,7 @@ app.use(cors());
 // Routes
 app.use('/api', require('./routes/noteRoute'));
 app.use('/api', require('./routes/userRoute'));
-app.use('/login', require('./routes/loginRoute'));
+app.use('/api/login', require('./routes/loginRoute'));
 
 // Middleware for Vue.js router History mode
 app.use(history());
